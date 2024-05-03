@@ -1,1 +1,62 @@
-test.xml
+<project name="sample" basedir="." default="all">
+
+	<!-- Import the Code Coverage properties file that was generated at install time.
+       NOTE:  For 64-bit, import CodeCoverageProperties64.xml  -->
+		<import file="D:\Jazz\jazz\buildsystem\codecoverage\CodeCoverageProperties.xml"/>
+
+	<target name="all" depends="runBuild" />
+	<target name="runBuild" depends="init, compile, appanalysis, execute, createReports, publishReports">
+		<echo message="Build ${buildDefinitionId} completed." />
+	</target>
+
+	<!--_____________________________________________________________________________________________
+	|
+	|					Step 1: Configure and verify the environment
+	|______________________________________________________________________________________________-->
+	<target name="test">
+
+		<!-- Verify the repositoryAddress property is set. This will normally be defined by the build
+			 system and does not need to be explicity provided. --> 
+		<fail message="The repositoryAddress property must be defined." unless="repositoryAddress" />
+		<echo message="Using repositoryAddress = ${repositoryAddress}" />
+
+		<!-- Verify the buildDefinitionId is set. This will normally be defined by the build system
+			 and does not need to be explicitly provided. -->
+		<fail message="The buildDefinitionId property must be defined." unless="buildDefinitionId" />
+		<echo message="Using buildDefinitionId = ${buildDefinitionId}" />
+
+		<!-- Username and password of user executing this build. The provided user needs to be part of the 
+			 build group in RTC -->
+		<property name="userId" value="build" />
+		<property name="password" value="build" />
+		
+		<!-- Path to a temporary directory used to store the code coverage artifacts (logs, statistics, 
+			 baseline, probescript, etc) -->
+		<property name="resultsDir" value= "${basedir}\coverage" />
+		
+		<!-- The path to the output coveragedata file used to store the raw statistics data -->
+		<property name= "coverageOutputFile" value= "${resultsDir}\StoreApp.coveragedata" />
+		
+		<!-- The path to the baseline file used to store metadata for the executing application -->
+		<property name= "baselineFile" value= "${resultsDir}\StoreApp.baseline" />
+		
+		<!-- The path to the probescript file used during execution time -->
+		<property name= "probescriptFile" value= "${resultsDir}\StoreApp.probescript" />
+
+		<!-- Echo the properties -->
+		<echo message="Using results directory = ${resultsDir}"/>
+		<echo message="Generating results to coveragedata file = ${coverageOutputFile}"/>
+		<echo message="Generating baseline to file = ${baselineFile}"/>
+		<echo message="Generating probescript to file = ${probescriptFile}"/>
+		
+		<!-- The path to the compressed coveragedata file -->
+		<property name="compressedCoveragedataFile" value="${resultsDir}\Coveragedata-${buildLabel}.zip">
+		
+		<!-- The path to the compressed baseline file -->
+		<property name="compressedBaselineFile" value="${resultsDir}\Baseline-${buildLabel}.zip"/>		
+		
+		<!-- Path to a JUnit jar for compiling and execution
+		     This is optional! Only required if you're executing a JUnit application. -->
+		<property name="junitJar" value="D:\Jazz\jazz\buildsystem\codecoverage\extra\junit.jar" />
+		
+	</target>
